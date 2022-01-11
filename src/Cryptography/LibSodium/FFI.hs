@@ -19,36 +19,16 @@ module Cryptography.LibSodium.FFI
   , c_sodium_free
   , c_sodium_free_funptr
    -- * Hashing
-   -- ** SHA256
-  , c_crypto_hash_sha256
-  , c_crypto_hash_sha256_final
-  , c_crypto_hash_sha256_init
-  , c_crypto_hash_sha256_update
    -- ** Blake2b 256
   , c_crypto_generichash_blake2b
   , c_crypto_generichash_blake2b_final
   , c_crypto_generichash_blake2b_init
   , c_crypto_generichash_blake2b_update
-   -- * ED25519
-  , c_crypto_sign_ed25519_seed_keypair
-  , c_crypto_sign_ed25519_sk_to_seed
-  , c_crypto_sign_ed25519_detached
-  , c_crypto_sign_ed25519_verify_detached
-  , c_crypto_sign_ed25519_sk_to_pk
    -- * Helpers
   , c_sodium_compare
-   -- * Constants
-  , CRYPTO_SHA256_BYTES
-  , CRYPTO_SHA512_BYTES
-  , CRYPTO_BLAKE2B_256_BYTES
-  , CRYPTO_SHA512_STATE_SIZE
-  , CRYPTO_SIGN_ED25519_BYTES
-  , CRYPTO_SIGN_ED25519_SEEDBYTES
-  , CRYPTO_SIGN_ED25519_PUBLICKEYBYTES
-  , CRYPTO_SIGN_ED25519_SECRETKEYBYTES
   ) where
 
-import Foreign.C.Types (CInt, CUChar, CULong, CSize)
+import Foreign.C.Types (CInt(..), CUChar(..), CULong(..), CSize(..))
 import Foreign.Ptr (FunPtr, Ptr)
 import Cryptography.LibSodium.Hash.Blake2b
 
@@ -120,37 +100,6 @@ foreign import capi unsafe "sodium.h sodium_free" c_sodium_free :: Ptr a -> IO (
 foreign import capi unsafe "sodium.h &sodium_free" c_sodium_free_funptr :: FunPtr (Ptr a -> IO ())
 
 -------------------------------------------------------------------------------
--- Hashing: SHA256
--------------------------------------------------------------------------------
-
--- | @int crypto_hash_sha256(unsigned char *out, const unsigned char *in, unsigned long long inlen)@
---
--- <https://libsodium.gitbook.io/doc/advanced/sha-2_hash_function>
-foreign import capi unsafe "sodium.h crypto_hash_sha256" c_crypto_hash_sha256
-  :: Ptr CUChar  -- ^ Output buffer in which the result of the hashing is stored
-  -> Ptr CUChar  -- ^ Input buffer in which the data to be hashed in stored
-  -> CULong     -- ^ Length of the input data
-  -> IO CInt
-
--- | @int crypto_hash_sha256_init(crypto_hash_sha256_state *state)@
-foreign import capi unsafe "sodium.h crypto_hash_sha256_init" c_crypto_hash_sha256_init
-    :: Ptr SHA256State   -- ^ SHA256 state
-  -> IO CInt
-
--- | @int crypto_hash_sha256_update(crypto_hash_sha256_state *state, const unsigned char *in, unsigned long long inlen)@
-foreign import capi unsafe "sodium.h crypto_hash_sha256_update" c_crypto_hash_sha256_update
-  :: Ptr SHA256State
-  -> Ptr CUChar
-  -> CULong
-  -> IO CInt
-
--- | @int crypto_hash_sha256_final(crypto_hash_sha256_state *state, unsigned char *out)@
-foreign import capi unsafe "sodium.h crypto_hash_sha256_final" c_crypto_hash_sha256_final
-  :: Ptr SHA256State
-  -> Ptr CRYPTO_SHA256_BYTES
-  -> IO CInt
-
--------------------------------------------------------------------------------
 -- Hashing: Blake2b
 -------------------------------------------------------------------------------
 
@@ -183,48 +132,6 @@ foreign import capi unsafe "sodium.h crypto_generichash_blake2b_update" c_crypto
 
 -- | @int crypto_generichash_blake2b_final(crypto_generichash_blake2b_state *state, unsigned char *out, const size_t outlen)@
 foreign import capi unsafe "sodium.h crypto_generichash_blake2b_final" c_crypto_generichash_blake2b_final :: Ptr Blake2bState -> Ptr out -> CSize -> IO CInt
-
--------------------------------------------------------------------------------
--- Signing: ED25519
--------------------------------------------------------------------------------
-
--- https://github.com/jedisct1/libsodium/blob/7b67cd1b32915bc957d750e7a15229f2a938ff1a/src/libsodium/include/sodium/crypto_sign_ed25519.h
-
--- | @int crypto_sign_ed25519_seed_keypair(unsigned char *pk, unsigned char *sk, const unsigned char *seed)@
-foreign import capi unsafe "sodium.h crypto_sign_ed25519_seed_keypair" c_crypto_sign_ed25519_seed_keypair
-    :: Ptr CRYPTO_SIGN_ED25519_PUBLICKEYBYTES
-    -> Ptr CRYPTO_SIGN_ED25519_SECRETKEYBYTES
-    -> Ptr CRYPTO_SIGN_ED25519_SEEDBYTES
-    -> IO CInt
-
--- | @int crypto_sign_ed25519_sk_to_seed(unsigned char *seed, const unsigned char *sk)@
-foreign import capi unsafe "sodium.h crypto_sign_ed25519_sk_to_seed" c_crypto_sign_ed25519_sk_to_seed
-    :: Ptr CRYPTO_SIGN_ED25519_SEEDBYTES
-    -> Ptr CRYPTO_SIGN_ED25519_SECRETKEYBYTES
-    -> IO CInt
-
--- | @int crypto_sign_ed25519_detached(unsigned char *sig, unsigned long long *siglen_p, const unsigned char *m, unsigned long long mlen, const unsigned char *sk)@
-foreign import capi unsafe "sodium.h crypto_sign_ed25519_detached" c_crypto_sign_ed25519_detached
-    :: Ptr CRYPTO_SIGN_ED25519_BYTES
-    -> Ptr CULong
-    -> Ptr CUChar
-    -> CULong
-    -> Ptr CRYPTO_SIGN_ED25519_SECRETKEYBYTES
-    -> IO CInt
-
--- | @int crypto_sign_ed25519_verify_detached(const unsigned char *sig, const unsigned char *m, unsigned long long mlen, const unsigned char *pk)@
-foreign import capi unsafe "sodium.h crypto_sign_ed25519_verify_detached" c_crypto_sign_ed25519_verify_detached
-    :: Ptr CRYPTO_SIGN_ED25519_BYTES
-    -> Ptr CUChar
-    -> CULong
-    -> Ptr CRYPTO_SIGN_ED25519_PUBLICKEYBYTES
-    -> IO CInt
-
--- | @int crypto_sign_ed25519_sk_to_pk(unsigned char *pk, const unsigned char *sk)@
-foreign import capi unsafe "sodium.h crypto_sign_ed25519_sk_to_pk" c_crypto_sign_ed25519_sk_to_pk
-    :: Ptr CRYPTO_SIGN_ED25519_PUBLICKEYBYTES
-    -> Ptr CRYPTO_SIGN_ED25519_SECRETKEYBYTES
-    -> IO CInt
 
 -------------------------------------------------------------------------------
 -- Helpers

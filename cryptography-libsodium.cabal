@@ -17,6 +17,9 @@ maintainer:         The Haskell Cryptography contributors
 license:            BSD-3-Clause
 build-type:         Custom
 tested-with:        GHC ==8.10.7 || ==9.0.1 || ==9.2.1
+build-tool-depends:
+  c2hs == 0.28.8
+
 extra-source-files:
   CHANGELOG.md
   LICENSE

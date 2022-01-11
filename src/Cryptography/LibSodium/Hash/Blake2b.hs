@@ -1,5 +1,6 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
-module Cryptography.LibSodium.Hash.Blake2b where
+module Cryptography.LibSodium.Hash.Blake2b
+  ( Blake2bState(..)
+  ) where
 
 import Data.Array.Storable (StorableArray, withStorableArray)
 import Data.Array.MArray (newListArray)
@@ -9,16 +10,9 @@ import Data.Word (Word8)
 import Foreign.C.Types (CSize, CUChar (..))
 import Data.Foldable (traverse_)
 
-import Cryptography.LibSodium.Orphans
+import Cryptography.LibSodium.Orphans ()
 
--- | C counterpart:
---
--- > #define crypto_generichash_blake2b_BYTES 32U
---
--- @since 0.0.1.0
-type CRYPTO_BLAKE2B_256_BYTES = 32
-
--- | Opaque wrapper holding the state for the Blake2b hashing algorithm.
+-- | Wrapper holding the state for the Blake2b hashing algorithm.
 --
 -- C counterpart:
 --
@@ -49,4 +43,4 @@ instance Storable Blake2bState where
 
     go :: Ptr CUChar -> Ptr CUChar -> IO ()
     go outPtr arrPtr = traverse_
-      (\i -> peek (plusPtr arrPtr i) >>= poke (plusPtr outPtr i)) [0..383]
+      (\i -> peek @CUChar (plusPtr arrPtr i) >>= poke (plusPtr outPtr i)) [0..383]
