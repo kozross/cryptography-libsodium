@@ -19,6 +19,11 @@ module Cryptography.LibSodium.FFI
   , c_sodium_free
   , c_sodium_free_funptr
    -- * Hashing
+   -- ** SHA-256
+  , c_crypto_hash_sha256
+  , c_crypto_hash_sha256_final
+  , c_crypto_hash_sha256_init
+  , c_crypto_hash_sha256_update
    -- ** Blake2b 256
   , c_crypto_generichash_blake2b
   , c_crypto_generichash_blake2b_final
@@ -28,9 +33,11 @@ module Cryptography.LibSodium.FFI
   , c_sodium_compare
   ) where
 
-import Foreign.C.Types (CInt(..), CUChar(..), CULong(..), CSize(..))
+import Foreign.C.Types (CInt(..), CUChar(..), CULLong(..), CSize(..))
 import Foreign.Ptr (FunPtr, Ptr)
 import Cryptography.LibSodium.Hash.Blake2b
+
+#include <sodium.h>
 
 -------------------------------------------------------------------------------
 -- Initialization
@@ -110,7 +117,7 @@ foreign import capi unsafe "sodium.h crypto_generichash_blake2b" c_crypto_generi
     :: Ptr out
     -> CSize
     -> Ptr CUChar
-    -> CULong
+    -> CULLong
     -> Ptr key
     -> CSize
     -> IO CInt
@@ -127,13 +134,36 @@ foreign import capi unsafe "sodium.h crypto_generichash_blake2b_init" c_crypto_g
 foreign import capi unsafe "sodium.h crypto_generichash_blake2b_update" c_crypto_generichash_blake2b_update
   :: Ptr Blake2bState
   -> Ptr CUChar
-  -> CULong
+  -> CULLong
   -> IO CInt
 
 -- | @int crypto_generichash_blake2b_final(crypto_generichash_blake2b_state *state, unsigned char *out, const size_t outlen)@
 foreign import capi unsafe "sodium.h crypto_generichash_blake2b_final" c_crypto_generichash_blake2b_final :: Ptr Blake2bState -> Ptr out -> CSize -> IO CInt
 
 -------------------------------------------------------------------------------
+-- Hashing: SHA256
+-------------------------------------------------------------------------------
+
+-- | @int crypto_hash_sha256(unsigned char *out, const unsigned char *in, unsigned long long inlen);@
+--
+-- <https://libsodium.gitbook.io/doc/advanced/sha-2_hash_function>
+foreign import capi unsafe "sodium.h crypto_hash_sha256" c_crypto_hash_sha256 :: Ptr CRYPTO_SHA256_BYTES -> Ptr CUChar -> CULLong -> IO Int
+
+-- | @int crypto_hash_sha256_init(crypto_hash_sha256_state *state);@
+foreign import capi unsafe "sodium.h crypto_hash_sha256_init" c_crypto_hash_sha256_init :: Ptr CRYPTO_SHA256_STATE_SIZE -> IO Int
+
+-- | @int crypto_hash_sha256_update(crypto_hash_sha256_state *state, const unsigned char *in, unsigned long long inlen);@
+foreign import capi unsafe "sodium.h crypto_hash_sha256_update" c_crypto_hash_sha256_update :: Ptr CRYPTO_SHA256_STATE_SIZE -> Ptr CUChar -> CULLong -> IO Int
+
+-- | @int crypto_hash_sha256_final(crypto_hash_sha256_state *state, unsigned char *out);@
+foreign import capi unsafe "sodium.h crypto_hash_sha256_final" c_crypto_hash_sha256_final :: Ptr CRYPTO_SHA256_STATE_SIZE -> SizedPtr CRYPTO_SHA256_BYTES -> IO Int
+
+type CRYPTO_SHA256_BYTES = #{ const crypto_hash_sha256_BYTES }
+type CRYPTO_SHA512_BYTES = #{ const crypto_hash_sha512_BYTES }
+type CRYPTO_BLAKE2B_256_BYTES = #{ const crypto_generichash_blake2b_BYTES }
+
+
+------------------------------------------------------------------------------------------------
 -- Helpers
 -------------------------------------------------------------------------------
 

@@ -55,8 +55,9 @@ common common-ghc-options
 
   include-dirs: ./cbits/libsodium-stable/src/libsodium/include/
   includes:     sodium.h
+  build-tool-depends: c2hs:c2hs
 
-common common-rts-optionsb
+common common-rts-options
   ghc-options: -rtsopts -threaded -with-rtsopts=-N
 
 custom-setup
