@@ -21,15 +21,15 @@ module Cryptography.Sodium.Helpers.Binding
     sodiumIsZero,
     -- * Hex encoding
     sodiumBinToHex,
-    sodiumHexToBin,
+--    sodiumHexToBin,
     -- * Base64 encoding
     sodiumBase64VariantOriginal,
     sodiumBase64VariantOriginalNoPadding,
     sodiumBase64VariantURLSafe,
     sodiumBase64VariantURLSafeNoPadding,
     sodiumBinToBase64,
-    sodiumBase64ToBin,
-    sodiumBase64EncodedLength,
+--    sodiumBase64ToBin,
+--    sodiumBase64EncodedLength,
     -- * Large numbers
     sodiumIncrement,
     sodiumAdd,
@@ -80,6 +80,8 @@ foreign import capi "sodium.h sodium_bin2hex"
     -- | Ptr to the start of the data written
     IO (Ptr CChar)
 
+{- Uncompilable, due to: https://gitlab.haskell.org/ghc/ghc/-/issues/15531
+
 -- | Parses a hexadecimal C-string and converts it to a byte sequence.
 --
 -- = Ignore string
@@ -125,29 +127,30 @@ foreign import capi "sodium.h sodium_hex2bin"
     Ptr (Ptr Char) ->
     -- | 0 on success, -1 on error (see documentation)
     IO CInt
+-}
 
 -- | Corresponds to @sodium_base64_VARIANT_ORIGINAL@.
 --
 -- @since 1.0
-foreign import capi "sodium.h sodium_base64_VARIANT_ORIGINAL"
+foreign import capi "sodium.h value sodium_base64_VARIANT_ORIGINAL"
   sodiumBase64VariantOriginal :: CInt
 
 -- | Corresponds to @sodium_base64_VARIANT_ORIGINAL_NO_PADDING@.
 --
 -- @since 1.0
-foreign import capi "sodium.h sodium_base64_VARIANT_ORIGINAL_NO_PADDING"
+foreign import capi "sodium.h value sodium_base64_VARIANT_ORIGINAL_NO_PADDING"
   sodiumBase64VariantOriginalNoPadding :: CInt
 
 -- | Corresponds to @sodium_base64_VARIANT_URLSAFE@.
 --
 -- @since 1.0
-foreign import capi "sodium.h sodium_base64_VARIANT_URLSAFE"
+foreign import capi "sodium.h value sodium_base64_VARIANT_URLSAFE"
   sodiumBase64VariantURLSafe :: CInt
 
 -- | Corresponds to @sodium_base64_VARIANT_URLSAFE_NO_PADDING@.
 --
 -- @since 1.0
-foreign import capi "sodium.h sodium_base64_VARIANT_URLSAFE_NO_PADDING"
+foreign import capi "sodium.h value sodium_base64_VARIANT_URLSAFE_NO_PADDING"
   sodiumBase64VariantURLSafeNoPadding :: CInt
 
 -- | Constructs a Base64 representation of binary data, as a C-string.
@@ -180,6 +183,8 @@ foreign import capi "sodium.h sodium_bin2base64"
     CInt ->
     -- | Ptr to the start of the data written
     IO (Ptr CChar)
+
+{- Uncompilable due to https://gitlab.haskell.org/ghc/ghc/-/issues/15531
 
 -- | Decodes a Base64 C-string using the given variant.
 --
@@ -261,6 +266,8 @@ foreign import capi "sodium.h sodium_base64_ENCODED_LEN"
     CInt ->
     -- | The minimum number of required bytes to encode
     CSize
+
+-}
 
 -- | Increments an arbitrary-length unsigned integer, encoded as little-endian.
 -- Works in constant time for any given length.
